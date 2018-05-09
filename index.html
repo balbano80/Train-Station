@@ -16,64 +16,46 @@
               <p class="lead">Come on, Ride the Train... Hey, Ride it!!! </p>
             </div>
         </div>
-        <table class="table table-hover rounded">
-        <thead>
-            <tr>
-            <th class="head" colspan="5" scope="colgroup">Current Train Schedule</th>  
-            </tr>  
-            <tr>
-            <th scope="col">Train Name</th>
-            <th scope="col">Destination</th>
-            <th scope="col">Frequency(min)</th>
-            <th scope="col">Next Arrival</th>
-            <th scope="col">Minutes Away</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            </tr>
-        </tbody>
-        </table>
-        <form class="table">
+        <div class="panel panel-default rounded">
+            <table class="table rounded table-hover" id="train-list">
+            <thead>
+                <tr>
+                    <th class="head rounded" colspan="5" scope="colgroup">Current Train Schedule</th>  
+                </tr>  
+                <tr class="table-head">
+                    <th scope="col"><strong>Train Name</strong></th>
+                    <th scope="col"><strong>Destination</strong></th>
+                    <th scope="col"><strong>Frequency(min)</strong></th>
+                    <th scope="col"><strong>Next Arrival</strong></th>
+                    <th scope="col"><strong>Minutes Away</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+    
+            </tbody>
+            </table>
+        </div>
+        <form class="table rounded">
             <div class="form-group head px-3">
                 Add Train
             </div>
             <div class="form-group px-3">
                 <label for="train-name">Train Name</label>
-                <input type="text" class="form-control" id="exampleInputEmail1">
+                <input type="text" class="form-control" id="train-name">
             </div>
             <div class="form-group px-3">
                 <label for="destination">Destination</label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="destination">
             </div>
             <div class="form-group px-3">
                 <label for="first-train">First Train Time (HH:mm - military time)</label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="first-arrival">
             </div>
             <div class="form-group px-3">
                     <label for="frequency">Frequency (min)</label>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="frequency">
                 </div>
-            <button type="submit" class="btn btn-primary ml-3 mb-2">Submit</button>
+            <button type="submit" class="btn btn-primary ml-3 mb-2" id="new-train">Submit</button>
         </form>
 
     </div>
@@ -81,5 +63,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="assets/javascript/app.js"></script>
     <script type="text/javascript"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
 </body>
 </html>
