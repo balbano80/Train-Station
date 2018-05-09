@@ -43,16 +43,16 @@ $(function(){
       $("#frequency").val("");
   }// will take the user input of train information,store in a train object and add to database
 
-  function displayTrain(arr){
+  function displayTrain(){
     for (var i = 0; i < trainArr.length; i++){
       var firstTime = moment(trainArr[i].firstArrival, "HH:mm").subtract(1, "years");
-      // console.log(firstTime);
+      console.log(trainArr[i]);
       var currentTime = moment();
       var timeDiffrence = moment().diff(moment(firstTime), "minutes");
       var remainder = timeDiffrence % parseInt(trainArr[i].frequency);
       var minAway = parseInt(trainArr[i].frequency) - remainder;
-      var nextArrival = moment().add(minAway, "minutes");
-      // console.log(nextArrival);
+      var nextArrival = (moment().add(minAway, "minutes")).format("hh:mm");
+      console.log(moment());
 
       $("#train-list > tbody").append("<tr><td>" + trainArr[i].name + "</td><td>" + trainArr[i].destination +
       "</td><td>" + trainArr[i].frequency + "</td><td>" + nextArrival + "</td><td>" + minAway + "</td></tr>");
@@ -61,15 +61,16 @@ $(function(){
    // appropriate table on page
 
   database.ref().on("child_added", function(childSnapshot){
-    console.log("Child: " + childSnapshot.val().name);
+    // console.log("Child: " + childSnapshot.val().name);
     trainArr.push(childSnapshot.val());
     $("#train-list > tbody").empty();
-    displayTrain(trainArr);
+    displayTrain();
   })
 
   $(document).on("click", "#new-train", function(event){
     event.preventDefault();
     addTrain();
   });
+  // setInterval(displayTrain(), 60000);
 
-});
+})
