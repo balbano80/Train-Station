@@ -14,31 +14,28 @@ $(function(){
   var trainArr = [];
   var database = firebase.database();
 
-  var trainObj = {
-      name: "",
-      destination: "",
-      firstArrival: "",
-      frequency: "",
-      trainNum: 0
-  };
 
-  var trainCounter = 0;
+  var name = "";
+  var destination = "";
+  var frequency = "";
+  var firstArrival = "";
 
   function addTrain(){
-      trainObj.name = $("#train-name").val().trim();
-      trainObj.destination = $("#destination").val().trim();;
-      trainObj.firstArrival = $("#first-arrival").val().trim();;
-      trainObj.frequency = $("#frequency").val().trim();;
-      trainObj.trainNum = trainCounter;
+      // trainArr.push(trainObj);
+      // console.log(trainObj);
+      name = $("#train-name").val().trim(),
+      destination = $("#destination").val().trim(),
+      firstArrival = $("#first-arrival").val().trim(),
+      frequency = $("#frequency").val().trim()
 
-      console.log(trainObj);
       database.ref().push({
-        train: trainObj
+        name: name,
+        destination: destination,
+        firstArrival: firstArrival,
+        frequency: frequency
       }, function(errorObj){
         console.log("Error: " + errorObj.code);
       });
-
-      trainCounter++;
 
       $("#train-name").val("");
       $("#destination").val("");
@@ -46,39 +43,33 @@ $(function(){
       $("#frequency").val("");
   }// will take the user input of train information,store in a train object and add to database
 
-  function displayTrain(){
-    database.ref().on("value", function(snapshot){
-        var tempBody = $("<tbody>");
-        var tempRow = $("<tr>");
-        tempRow.append(tempBody);
-        var tempName = $("<td>");
-        var tempDestination = $("<td>");
-        var tempFrequency = $("<td>");
-        // tempName.attr("scope", "col");
-        tempName.text(snapshot.val().train.name);
-        tempBody.append(tempName);
-        console.log(tempName);
+  function displayTrain(arr){
+    for (var i = 0; i < trainArr.length; i++){
+      var firstTime = moment(trainArr[i].firstArrival, "HH:mm").subtract(1, "years");
+      // console.log(firstTime);
+      var currentTime = moment();
+      var timeDiffrence = moment().diff(moment(firstTime), "minutes");
+      var remainder = timeDiffrence % parseInt(trainArr[i].frequency);
+      var minAway = parseInt(trainArr[i].frequency) - remainder;
+      var nextArrival = moment().add(minAway, "minutes");
+      // console.log(nextArrival);
 
-        tempDestination.text(snapshot.val().train.destination);        
-        tempBody.append(tempDestination);
-        tempFrequency.text(snapshot.val().train.frequency);
-        tempBody.append(tempFrequency);
-
-        $("#train-list").append(tempBody);
-        console.log(tempBody);
-      }, function(errorObj){
-        console.log("Error: " + errorObj.code);
-    });
+      $("#train-list > tbody").append("<tr><td>" + trainArr[i].name + "</td><td>" + trainArr[i].destination +
+      "</td><td>" + trainArr[i].frequency + "</td><td>" + nextArrival + "</td><td>" + minAway + "</td></tr>");
+    }
   }// creates table elements, pulls data from firebase, and stores the data in those elements which are appended to
    // appropriate table on page
 
+  database.ref().on("child_added", function(childSnapshot){
+    console.log("Child: " + childSnapshot.val().name);
+    trainArr.push(childSnapshot.val());
+    $("#train-list > tbody").empty();
+    displayTrain(trainArr);
+  })
 
   $(document).on("click", "#new-train", function(event){
     event.preventDefault();
     addTrain();
-    displayTrain();
   });
-
-  displayTrain();
 
 });
