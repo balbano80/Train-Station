@@ -37,3 +37,11 @@ body{
 .table-head{
     color: #131E32;
 }
+
+.header{
+    font-size: 100px;
+}
+
+.lead{
+    font-size: 50px;
+}
