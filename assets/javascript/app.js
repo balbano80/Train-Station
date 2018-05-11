@@ -11,18 +11,22 @@ $(function(){
   };
   firebase.initializeApp(config);
 
-  var trainArr = [];
   var database = firebase.database();
 
-
+  var trainArr = [];
   var name = "";
   var destination = "";
   var frequency = "";
   var firstArrival = "";
 
+  var currentTime = "";
+  var timeDiffrence = "";
+  var remainder = "";
+  var minAway = "";
+  var nextArrival = "";
+  var baseMinAway = "";
+
   function addTrain(){
-      // trainArr.push(trainObj);
-      // console.log(trainObj);
       name = $("#train-name").val().trim(),
       destination = $("#destination").val().trim(),
       firstArrival = $("#first-arrival").val().trim(),
@@ -41,36 +45,53 @@ $(function(){
       $("#destination").val("");
       $("#first-arrival").val("");
       $("#frequency").val("");
-  }// will take the user input of train information,store in a train object and add to database
+  }// takes the user input of train information, and push to database.  Also clears out input fields.
 
   function displayTrain(){
+    $("#train-list > tbody").empty();
     for (var i = 0; i < trainArr.length; i++){
-      var firstTime = moment(trainArr[i].firstArrival, "HH:mm").subtract(1, "years");
-      console.log(trainArr[i]);
-      var currentTime = moment();
-      var timeDiffrence = moment().diff(moment(firstTime), "minutes");
-      var remainder = timeDiffrence % parseInt(trainArr[i].frequency);
-      var minAway = parseInt(trainArr[i].frequency) - remainder;
-      var nextArrival = (moment().add(minAway, "minutes")).format("hh:mm");
-      console.log(moment());
+      var firstTime = moment(trainArr[i].firstArrival, "HH:mm A").subtract(1, "years");
+      // console.log(trainArr[i]);
+      currentTime = moment();
+      timeDiffrence = moment().diff(moment(firstTime), "minutes");
+      remainder = timeDiffrence % parseInt(trainArr[i].frequency);
+      minAway = parseInt(trainArr[i].frequency) - remainder;
+      nextArrival = (moment().add(minAway, "minutes")).format("hh:mm A");
+      if (i === 0){
+        baseMinAway = minAway;
+        // console.log("baseMinAway" + baseMinAway);
+      }
 
       $("#train-list > tbody").append("<tr><td>" + trainArr[i].name + "</td><td>" + trainArr[i].destination +
       "</td><td>" + trainArr[i].frequency + "</td><td>" + nextArrival + "</td><td>" + minAway + "</td></tr>");
     }
-  }// creates table elements, pulls data from firebase, and stores the data in those elements which are appended to
-   // appropriate table on page
+  }// loops through the array of train objects, calculates times using moment.js, formats them and displays all
 
   database.ref().on("child_added", function(childSnapshot){
     // console.log("Child: " + childSnapshot.val().name);
     trainArr.push(childSnapshot.val());
-    $("#train-list > tbody").empty();
     displayTrain();
-  })
+    },  function(errorObj){
+    console.log("Error: " + errorObj.code);
+  });
 
   $(document).on("click", "#new-train", function(event){
     event.preventDefault();
     addTrain();
   });
-  // setInterval(displayTrain(), 60000);
-
-})
+  setInterval(function(){
+    if (trainArr.length > 0){
+      var checkFirstTime = moment(trainArr[0].firstArrival, "HH:mm A").subtract(1, "years");
+      var checkCurrentTime = moment();
+      var checkTimeDiffrence = moment().diff(moment(checkFirstTime), "minutes");
+      var checkRemainder = checkTimeDiffrence % parseInt(trainArr[0].frequency);
+      var checkMinAway = parseInt(trainArr[0].frequency) - checkRemainder;
+      // console.log("CheckMinAway: " + checkMinAway)
+      if (checkMinAway !== 0 || checkMinAway < baseMinAway){
+        displayTrain();
+      }
+    }
+  }, 1000);// First checks if there are any trains in the array.  Then, every second, it re-calculates 
+           //and compares the current minutes away to the stored minutes away from last displayTrain 
+           //function call. If current is less than, then call displayTrain function again.
+});
